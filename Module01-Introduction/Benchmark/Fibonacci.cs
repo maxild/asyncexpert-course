@@ -1,10 +1,15 @@
 ﻿using BenchmarkDotNet.Attributes;
+using Xunit;
 
 namespace Benchmark;
 
+[MemoryDiagnoser] // It is not windows only any longer!!!
 [DisassemblyDiagnoser(exportCombinedDisassemblyReport: true)]
 public class FibonacciCalc
 {
+    private const int MaxIndex = 35;
+    private static readonly ulong[] s_FibCache = new ulong[MaxIndex + 1];
+
     // HOMEWORK:
     // 1. Write implementations for RecursiveWithMemoization and Iterative solutions
     // 2. Add MemoryDiagnoser to the benchmark
@@ -17,26 +22,84 @@ public class FibonacciCalc
     [ArgumentsSource(nameof(Data))]
     public ulong Recursive(ulong n)
     {
-        return n is 1 or 2 ? 1 : Recursive(n - 2) + Recursive(n - 1);
+        // Base Case
+        //      Fib(0) = 0
+        //      Fib(1) = 1
+        // Inductive Case
+        //      Fib(n) = Fib(n-1) + Fib(n-2), n > 1
+        return n is 0 or 1
+            ? n                                         // base case
+            : Recursive(n - 2) + Recursive(n - 1);      // inductive case
     }
 
     [Benchmark]
     [ArgumentsSource(nameof(Data))]
     public ulong RecursiveWithMemoization(ulong n)
     {
-        return 0;
+        if (n is 0 or 1)
+        {
+            return n; // base case (otherwise we do not know if memoization store is initialized)
+        }
+
+        ulong result = s_FibCache[n];
+        if (result > 0)
+        {
+            return result;
+        }
+        else
+        {
+            // try memoize for all indexes less than n
+            result = RecursiveWithMemoization(n - 1) + RecursiveWithMemoization(n - 2);
+            s_FibCache[n] = result;
+            return result;
+        }
     }
 
     [Benchmark]
     [ArgumentsSource(nameof(Data))]
     public ulong Iterative(ulong n)
     {
-        return 0;
+        if (n is 0 or 1)
+        {
+            return n;
+        }
+
+        ulong prev = 0; // Fib(n-2), for n = 2
+        ulong curr = 1; // Fib(n-1), for n = 2
+        while (n-- > 1)
+        {
+            // Fib(2) is calculated on first iteration
+            // Fib(n) is calculated on n - 2 => the loop should run (n-2) times
+            (curr, prev) = (prev + curr, curr);
+        }
+
+        return curr;
     }
 
     public static IEnumerable<ulong> Data()
     {
         yield return 15;
         yield return 35;
+    }
+}
+
+public class FibonacciCalcTests
+{
+    [Fact]
+    public void Recursive()
+    {
+        Assert.Equal(5uL, new FibonacciCalc().Recursive(5));
+    }
+
+    [Fact]
+    public void RecursiveWithMemoization()
+    {
+        Assert.Equal(5uL, new FibonacciCalc().RecursiveWithMemoization(5));
+    }
+
+    [Fact]
+    public void Iterative()
+    {
+        Assert.Equal(5uL, new FibonacciCalc().Iterative(5));
     }
 }
