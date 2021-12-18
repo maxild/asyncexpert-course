@@ -7,13 +7,28 @@ BenchmarkSwitcher.FromAssembly(Assembly.GetExecutingAssembly()).Run(args);
 Therefore this will run the benchmark
 
 ```bash
-$ dotnet run -c Release --project .\Benchmark\Benchmark.csproj -- --filter *Fibonacci*
+$ dotnet run -c Release --project ./Benchmark/Benchmark.csproj -- --filter '*Fibonacci*'
+```
+
+On Linux I get
+
+> Failed to set up high priority. Make sure you have the right permissions. Message: Permission denied
+
+This message means that the benchmark runner was not able to set the execution
+to high CPU priority, so the benchmark will run slower, especially if other
+applications are running at the same time.
+
+If you encounter this problem, either run the command as Administrator on Windows,
+ or sudo it if running on Mac or Linux.
+
+```bash
+$ sudo dotnet run -c Release --project ./Benchmark/Benchmark.csproj -- --filter '*Fibonacci*'
 ```
 
 This is the documentation why `--filter` works
 
 ```bash
-$ dotnet run -c Release  --project .\Benchmark\Benchmark.csproj -- --help
+$ dotnet run -c Release  --project ./Benchmark/Benchmark.csproj -- --help
 Benchmark 1.0.0
 Copyright (C) 2021 Benchmark
 USAGE:
