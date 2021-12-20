@@ -7,8 +7,8 @@ namespace Benchmark;
 [DisassemblyDiagnoser(exportCombinedDisassemblyReport: true)]
 public class FibonacciCalc
 {
-    private const int MaxIndex = 35;
-    private static readonly ulong[] s_FibCache = new ulong[MaxIndex + 1];
+    private const int MAX_INDEX = 35;
+    private static readonly ulong[] s_fibCache = new ulong[MAX_INDEX + 1];
 
     // HOMEWORK:
     // 1. Write implementations for RecursiveWithMemoization and Iterative solutions
@@ -37,22 +37,16 @@ public class FibonacciCalc
     public ulong RecursiveWithMemoization(ulong n)
     {
         if (n is 0 or 1)
-        {
             return n; // base case (otherwise we do not know if memoization store is initialized)
-        }
 
-        ulong result = s_FibCache[n];
+        ulong result = s_fibCache[n];
         if (result > 0)
-        {
             return result;
-        }
-        else
-        {
-            // try memoize for all indexes less than n
-            result = RecursiveWithMemoization(n - 1) + RecursiveWithMemoization(n - 2);
-            s_FibCache[n] = result;
-            return result;
-        }
+
+        // try memoize for all indexes less than n
+        result = RecursiveWithMemoization(n - 1) + RecursiveWithMemoization(n - 2);
+        s_fibCache[n] = result;
+        return result;
     }
 
     [Benchmark]
@@ -60,18 +54,14 @@ public class FibonacciCalc
     public ulong Iterative(ulong n)
     {
         if (n is 0 or 1)
-        {
             return n;
-        }
 
         ulong prev = 0; // Fib(n-2), for n = 2
         ulong curr = 1; // Fib(n-1), for n = 2
         while (n-- > 1)
-        {
             // Fib(2) is calculated on first iteration
             // Fib(n) is calculated on n - 2 => the loop should run (n-2) times
             (curr, prev) = (prev + curr, curr);
-        }
 
         return curr;
     }

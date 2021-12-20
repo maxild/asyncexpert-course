@@ -4,6 +4,31 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>10</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Missing XML comment for publicly visible type or member -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <!-- Turn on `/features:strict` ("strict mode" in roslyn) -->
+    <Feature>strict</Feature>
+    <!-- .NET code style analysis is disabled, by default -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <!-- MSBuildTreatWarningsAsErrors is undocumented.
+      See https://github.com/dotnet/msbuild/pull/1928
+      https://github.com/dotnet/roslyn/issues/43051#issuecomment-631943470
+      https://github.com/MicrosoftDocs/visualstudio-docs/issues/4660#issuecomment-887994763
+    -->
+    <!-- makes all warnings into errors unless they’re suppressed -->
+    <MSBuildTreatWarningsAsErrors>true</MSBuildTreatWarningsAsErrors>
+    <!-- elevates specific warning codes -->
+<!--    <MSBuildWarningsAsErrors></MSBuildWarningsAsErrors>-->
+    <!-- suppresses specific warning codes -->
+<!--    <MSBuildWarningsAsMessages></MSBuildWarningsAsMessages>-->
+    <!-- NOTE: TreatWarningsAsErrors and NoWarn props defined in root -->
+    <!--
+      Compiler does not report unused imports when XML doc comments are disabled (https://github.com/dotnet/roslyn/issues/41640)
+      Other tools (StyleCop) does enforce this too.
+      Therefore we generate xml docs even for test projects (and simply ignore both the xml doc file and CS1591)
+    -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <ImplicitUsings>enable</ImplicitUsings>
     <!--
       Microsoft.NET.Test.Sdk contains MSBuild targets file that will generate entry point and set OutputType=Exe. We
