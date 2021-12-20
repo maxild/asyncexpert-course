@@ -1,14 +1,26 @@
 # See also
 # https://developers.mews.com/csharp-code-style-by-editorconfig/
 # https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview
-# IDEXXXX rules: https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/#index
-# CAXXXX rules:  https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/
+# the IDExxxx diagnostic IDs are not implementation details.
+# IDExxxx rules: https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/#index
+# CAxxxx rules:  https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/
 # NOTES:
 #  Visual Studio 2022 provides convenient UI for `.editorcofig` editing
 #
 [*.cs]
 # IDE0160: Convert to file-scoped namespace
-# csharp_style_namespace_declarations=file_scoped:warning
+# This syntax is recognized in IDE only and doesn't work for command line builds.
+# the severity setting from this syntax is only respected when executing the
+# corresponding analyzer in the IDE live analysis. This syntax is not recognized
+# by the command line compiler and/or the analyzer driver, so the severity setting
+# below is redundant when executing from an explicit command line build. Additionally,
+# with the command line compiler optimization implemented in #43546, we no longer
+# execute hidden/suggestion analyzers in command line builds, unless the user has
+# explicitly specified the analyzer diagnostic ID as a warning or error with the
+# dotnet_diagnostic.RuleID.severity = severity syntax.
+# See https://github.com/dotnet/roslyn/issues/44201
+#     https://github.com/dotnet/roslyn/issues/52694#issuecomment-822275761
+#   csharp_style_namespace_declarations=file_scoped:warning
 
 # Syntax option = rule:severity will be deprecated, sooner or later.
 # The severity level from ` option_name = option_value:severity` is not recognised by CLI,
@@ -26,6 +38,48 @@
 # This is required by dotnet CLI
 csharp_style_namespace_declarations = file_scoped
 dotnet_diagnostic.IDE0161.severity = warning
+
+################################################################################
+# Old (maybe?!! soon deprecated) syntax
+#
+#   dotnet_style_qualification_for_field = false:warning
+#
+# new syntax (understood by the Roslyn compiler)
+#
+# NOTE: option_name = dotnet_style_qualification_for_field and disgnosticID = IDExxxx
+#       does not correspond to each other from a user perspective (very complex and magical)
+#   dotnet_style_qualification_for_field = false   (compiler DOES NOT understand this line)
+#   dotnet_diagnostic.IDE0003.severity = warning   (compiler understand this line)
+#   dotnet_diagnostic.IDE0009.severity = warning   (dotnet_diagnostic syntax understood by Roslyn)
+# NOTE: Unfortunately, the `dotnet_diagnostic` syntax is not recognized by Rider.
+# NOTE: In addition, Visual Studio 2022’s EditorConfig UI tool doesn’t emit the
+#       `dotnet_diagnostic` syntax when severity is updated (https://github.com/dotnet/roslyn/issues/52720).
+#
+# More specifically, only IDE0003 is used when the value is false, and only IDE0009
+# is used when the value is true. You don't need to configure the severity of both
+# IDE0003 and IDE0009 when the value of dotnet_style_qualification_for_field is
+# configured in the same .editorconfig section.
+#
+# Technically the compiler doesn't understand either of these, and under the
+# current design doesn't need to. Starting with #43546, the compiler doesn't
+# run analyzers that are marked as 'hidden' or 'info'. If the analyzer has one
+# of these as the defaults and the configuration doesn't raise the severity via
+# a compiler-recognized dotnet_diagnostic line, the analyzer will not execute at
+# all and therefore will not report any diagnostics at any severity.
+#
+# The compiler doesn't need to know about dotnet_style_qualification_for_field
+# because analyzers in the code style layer read this option directly. And the
+# analyzers only run if the compiler has been instructed to run them via a severity configuration of warning or error.
+#
+# Conclusion (solution...maybe?!?...new approach)
+#
+# By default, all rules will report severity ` warning` in command line builds and
+# `hidden` for IDEs. In doing so IDE code style analyzers will use the `MinimumReportedSeverity`
+# and `option_name = option_value:severity` entries in `.editorconfig` to decide
+# if they should execute or turn off completely.
+#
+#  https://github.com/dotnet/roslyn/issues/52991#issuecomment-840407508
+################################################################################
 
 ################################################################################
 ####                              Naming                                    ####
