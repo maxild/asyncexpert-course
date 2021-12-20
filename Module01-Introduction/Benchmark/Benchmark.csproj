@@ -4,7 +4,21 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>10</LangVersion>
+    <!--
+      makes all warnings into errors unless they’re suppressed
+      dotnet msbuild "-warnAsError" does elevate MSBuild warnings to errors,
+      whereas "-p:TreatWarningsAsErrors=true" only impacts csc errors.
+    -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <MSBuildTreatWarningsAsErrors>true</MSBuildTreatWarningsAsErrors>
+    <!--
+      WarningsAsErrors is the same as MSBuildWarningsAsErrors in MSBuild 16.9 and higher.
+      https://github.com/dotnet/msbuild/pull/5774
+     -->
+    <!-- elevates specific warning codes -->
+    <!--    <MSBuildWarningsAsErrors></MSBuildWarningsAsErrors>-->
+    <!-- suppresses specific warning codes -->
+    <!--    <MSBuildWarningsAsMessages></MSBuildWarningsAsMessages>-->
     <!-- Missing XML comment for publicly visible type or member -->
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <!-- Turn on `/features:strict` ("strict mode" in roslyn) -->
@@ -16,12 +30,7 @@
       https://github.com/dotnet/roslyn/issues/43051#issuecomment-631943470
       https://github.com/MicrosoftDocs/visualstudio-docs/issues/4660#issuecomment-887994763
     -->
-    <!-- makes all warnings into errors unless they’re suppressed -->
-    <MSBuildTreatWarningsAsErrors>true</MSBuildTreatWarningsAsErrors>
-    <!-- elevates specific warning codes -->
-<!--    <MSBuildWarningsAsErrors></MSBuildWarningsAsErrors>-->
-    <!-- suppresses specific warning codes -->
-<!--    <MSBuildWarningsAsMessages></MSBuildWarningsAsMessages>-->
+
     <!-- NOTE: TreatWarningsAsErrors and NoWarn props defined in root -->
     <!--
       Compiler does not report unused imports when XML doc comments are disabled (https://github.com/dotnet/roslyn/issues/41640)
