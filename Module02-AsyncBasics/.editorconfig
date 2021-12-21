@@ -1,0 +1,242 @@
+# See also
+# https://developers.mews.com/csharp-code-style-by-editorconfig/
+# https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview
+# the IDExxxx diagnostic IDs are not implementation details.
+# IDExxxx rules: https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/#index
+# CAxxxx rules:  https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/
+# NOTES:
+#  Visual Studio 2022 provides convenient UI for `.editorcofig` editing
+#
+[*.cs]
+# IDE0160: Convert to file-scoped namespace
+# This syntax is recognized in IDE only and doesn't work for command line builds.
+# the severity setting from this syntax is only respected when executing the
+# corresponding analyzer in the IDE live analysis. This syntax is not recognized
+# by the command line compiler and/or the analyzer driver, so the severity setting
+# below is redundant when executing from an explicit command line build. Additionally,
+# with the command line compiler optimization implemented in #43546, we no longer
+# execute hidden/suggestion analyzers in command line builds, unless the user has
+# explicitly specified the analyzer diagnostic ID as a warning or error with the
+# dotnet_diagnostic.RuleID.severity = severity syntax.
+# See https://github.com/dotnet/roslyn/issues/44201
+#     https://github.com/dotnet/roslyn/issues/52694#issuecomment-822275761
+#   csharp_style_namespace_declarations=file_scoped:warning
+
+# Syntax option = rule:severity will be deprecated, sooner or later.
+# The severity level from ` option_name = option_value:severity` is not recognised by CLI,
+# only by IDEs. Microsoft’s compiler team rejected adjustment of MSBuild to respect this
+# syntax and enforced the use of the `dotnet_diagnostic` syntax.
+# https://github.com/dotnet/roslyn/issues/52694#issuecomment-822179683
+# Microsoft had a plan to make the syntax `option_name = option_value:severity`
+# obsolete in favor of the `dotnet_diagnostic` syntax, but there was a quite
+# expected customer pushback. The result from this is a new approach for handling
+# IDE code style analyzers in command line builds – `AnalysisContext.MinimumReportedSeverity`.
+# https://github.com/dotnet/roslyn/issues/52991
+# https://github.com/dotnet/roslyn/issues/52991#issuecomment-840407508
+
+# ===== NEW SYNTAX =====
+# This is required by dotnet CLI
+csharp_style_namespace_declarations = file_scoped
+dotnet_diagnostic.IDE0161.severity = warning
+
+################################################################################
+# Old (maybe?!! soon deprecated) syntax
+#
+#   dotnet_style_qualification_for_field = false:warning
+#
+# new syntax (understood by the Roslyn compiler)
+#
+# NOTE: option_name = dotnet_style_qualification_for_field and disgnosticID = IDExxxx
+#       does not correspond to each other from a user perspective (very complex and magical)
+#   dotnet_style_qualification_for_field = false   (compiler DOES NOT understand this line)
+#   dotnet_diagnostic.IDE0003.severity = warning   (compiler understand this line)
+#   dotnet_diagnostic.IDE0009.severity = warning   (dotnet_diagnostic syntax understood by Roslyn)
+# NOTE: Unfortunately, the `dotnet_diagnostic` syntax is not recognized by Rider.
+# NOTE: In addition, Visual Studio 2022’s EditorConfig UI tool doesn’t emit the
+#       `dotnet_diagnostic` syntax when severity is updated (https://github.com/dotnet/roslyn/issues/52720).
+#
+# More specifically, only IDE0003 is used when the value is false, and only IDE0009
+# is used when the value is true. You don't need to configure the severity of both
+# IDE0003 and IDE0009 when the value of dotnet_style_qualification_for_field is
+# configured in the same .editorconfig section.
+#
+# Technically the compiler doesn't understand either of these, and under the
+# current design doesn't need to. Starting with #43546, the compiler doesn't
+# run analyzers that are marked as 'hidden' or 'info'. If the analyzer has one
+# of these as the defaults and the configuration doesn't raise the severity via
+# a compiler-recognized dotnet_diagnostic line, the analyzer will not execute at
+# all and therefore will not report any diagnostics at any severity.
+#
+# The compiler doesn't need to know about dotnet_style_qualification_for_field
+# because analyzers in the code style layer read this option directly. And the
+# analyzers only run if the compiler has been instructed to run them via a severity configuration of warning or error.
+#
+# Conclusion (solution...maybe?!?...new approach)
+#
+# By default, all rules will report severity ` warning` in command line builds and
+# `hidden` for IDEs. In doing so IDE code style analyzers will use the `MinimumReportedSeverity`
+# and `option_name = option_value:severity` entries in `.editorconfig` to decide
+# if they should execute or turn off completely.
+#
+#  https://github.com/dotnet/roslyn/issues/52991#issuecomment-840407508
+################################################################################
+
+################################################################################
+####                              Naming                                    ####
+################################################################################
+# NOTE: All naming options have rule ID IDE1006 and title 'Naming rule violation'
+# https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/naming-rules
+
+
+##########################################
+# Styles
+##########################################
+# Style specifications: 'capitalization' (required), required_prefix (optional), required_suffix (optional), word_separator (optional).
+
+# camel_case_style - Define the camelCase style
+dotnet_naming_style.camel_case_style.capitalization = camel_case
+# pascal_case_style - Define the PascalCase style
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+# all_upper_case_style - Define the UPPER_CASE style
+dotnet_naming_style.all_upper_case_style.capitalization = all_upper
+dotnet_naming_style.all_upper_case_style.word_separator = _
+# static_field_style - Define the s_staticField style
+dotnet_naming_style.static_field_style.capitalization = camel_case
+dotnet_naming_style.static_field_style.required_prefix = s_
+# instance_field_style - Define the _instanceField style
+dotnet_naming_style.instance_field_style.capitalization = camel_case
+dotnet_naming_style.instance_field_style.required_prefix = _
+# interface_style - Interfaces must be PascalCase and the first character of an interface must be an 'I'
+dotnet_naming_style.interface_style.capitalization = pascal_case
+dotnet_naming_style.interface_style.required_prefix = I
+# type_parameter_style - Generic Type Parameters must be PascalCase and the first character must be a 'T'
+dotnet_naming_style.type_parameter_style.capitalization = pascal_case
+dotnet_naming_style.type_parameter_style.required_prefix = T
+
+##########################################
+# Symbols
+##########################################
+# Symbol specifications: 'applicable_accessibilities' (required), 'applicable_kinds' (required) and 'required_modifiers' (optional).
+# TODO: applicable_kinds is not required
+
+# private constants
+dotnet_naming_symbols.private_constants.applicable_accessibilities = private
+dotnet_naming_symbols.private_constants.applicable_kinds = field
+dotnet_naming_symbols.private_constants.required_modifiers = const
+
+# Non-private constants
+dotnet_naming_symbols.non_private_constants.applicable_accessibilities = public, internal, protected_internal, protected, private_protected
+dotnet_naming_symbols.non_private_constants.applicable_kinds = field
+dotnet_naming_symbols.non_private_constants.required_modifiers = const
+
+# local constants
+dotnet_naming_symbols.local_constants.applicable_accessibilities = *
+dotnet_naming_symbols.local_constants.applicable_kinds = local
+dotnet_naming_symbols.local_constants.required_modifiers = const
+
+# Non-private static fields
+dotnet_naming_symbols.non_private_static_fields.applicable_accessibilities = public, protected, internal, protected_internal, private_protected
+dotnet_naming_symbols.non_private_static_fields.applicable_kinds = field
+dotnet_naming_symbols.non_private_static_fields.required_modifiers = static
+
+# Non-private readonly fields
+dotnet_naming_symbols.non_private_readonly_fields.applicable_accessibilities = public, protected, internal, protected_internal, private_protected
+dotnet_naming_symbols.non_private_readonly_fields.applicable_kinds = field
+dotnet_naming_symbols.non_private_readonly_fields.required_modifiers = readonly
+
+# private static fields
+dotnet_naming_symbols.private_static_fields.applicable_accessibilities = private
+dotnet_naming_symbols.private_static_fields.applicable_kinds = field
+dotnet_naming_symbols.private_static_fields.required_modifiers = static
+
+# private instance fields
+dotnet_naming_symbols.private_instance_fields.applicable_accessibilities = private
+dotnet_naming_symbols.private_instance_fields.applicable_kinds = field
+
+# local variables and parameters
+dotnet_naming_symbols.locals_and_parameters.applicable_kinds = parameter, local
+
+# local functions
+dotnet_naming_symbols.local_functions.applicable_kinds = local_function
+
+# interfaces
+dotnet_naming_symbols.interfaces.applicable_kinds = interface
+
+# type parameters
+dotnet_naming_symbols.type_parameters.applicable_kinds = type_parameter
+
+# universal (catch all) symbols
+dotnet_naming_symbols.all_members.applicable_kinds = *
+
+##########################################
+# Naming rules
+##########################################
+# Naming rule specification: symbols (required), style (required), severity (required)
+
+# TODO: const => static
+
+# TODO: Haven't though about if we need any special rules for
+#       Plain Old structs (where public fields are PascalCase)
+#       readonly structs
+
+# Non-private static fields are PascalCase
+dotnet_naming_rule.non_private_static_fields_should_be_pascal_case.symbols = non_private_static_fields
+dotnet_naming_rule.non_private_static_fields_should_be_pascal_case.style = camel_case_style
+dotnet_naming_rule.non_private_static_fields_should_be_pascal_case.severity = warning
+
+# Non-private readonly fields are PascalCase
+dotnet_naming_rule.non_private_readonly_fields_should_be_pascal_case.symbols = non_private_readonly_fields
+dotnet_naming_rule.non_private_readonly_fields_should_be_pascal_case.style = pascal_case_style
+dotnet_naming_rule.non_private_readonly_fields_should_be_pascal_case.severity = warning
+
+# Private constant fields are UPPER_CASE
+dotnet_naming_rule.private_constants_should_be_all_upper_case.symbols = private_constants
+dotnet_naming_rule.private_constants_should_be_all_upper_case.style = all_upper_case_style
+dotnet_naming_rule.private_constants_should_be_all_upper_case.severity = warning
+
+# Local constants are UPPER_CASE
+dotnet_naming_rule.local_constants_should_be_all_upper_case.symbols = local_constants
+dotnet_naming_rule.local_constants_should_be_all_upper_case.style = all_upper_case_style
+dotnet_naming_rule.local_constants_should_be_all_upper_case.severity = warning
+
+# Non-private constant fields are PascalCase
+dotnet_naming_rule.non_private_constants_should_be_pascal_case.symbols = non_private_constants
+dotnet_naming_rule.non_private_constants_should_be_pascal_case.style = pascal_case_style
+dotnet_naming_rule.non_private_constants_should_be_pascal_case.severity = warning
+
+# Private static fields are camelCase and start with s_
+dotnet_naming_rule.static_fields_should_be_camel_case.symbols = private_static_fields
+dotnet_naming_rule.static_fields_should_be_camel_case.style = static_field_style
+dotnet_naming_rule.static_fields_should_be_camel_case.severity = warning
+
+# Private instance (TODO: and maybe protected) fields are camelCase and start with _
+dotnet_naming_rule.instance_fields_should_be_camel_case.symbols = private_instance_fields
+dotnet_naming_rule.instance_fields_should_be_camel_case.style = instance_field_style
+dotnet_naming_rule.instance_fields_should_be_camel_case.severity = warning
+
+# Locals and parameters are camelCase
+dotnet_naming_rule.locals_should_be_camel_case.symbols = locals_and_parameters
+dotnet_naming_rule.locals_should_be_camel_case.style = camel_case_style
+dotnet_naming_rule.locals_should_be_camel_case.severity = warning
+
+# Local functions are PascalCase
+dotnet_naming_rule.local_functions_should_be_pascal_case.symbols = local_functions
+dotnet_naming_rule.local_functions_should_be_pascal_case.style = pascal_case_style
+dotnet_naming_rule.local_functions_should_be_pascal_case.severity = warning
+
+# Interfaces use PascalCase and are prefixed with uppercase 'I'
+# https://docs.microsoft.com/dotnet/standard/design-guidelines/names-of-classes-structs-and-interfaces
+dotnet_naming_rule.interface_rule.symbols = interfaces
+dotnet_naming_rule.interface_rule.style = interface_style
+dotnet_naming_rule.interface_rule.severity = warning
+
+# TODO: Don't know if Some<T, U> should be forbidden?
+# Generics Type Parameters use PascalCase and are prefixed with uppercase 'T'
+dotnet_naming_rule.type_parameter_rule.symbols = type_parameters
+dotnet_naming_rule.type_parameter_rule.style = type_parameter_style
+dotnet_naming_rule.type_parameter_rule.severity = warning
+
+# By default we fallback to PascalCase
+dotnet_naming_rule.members_should_be_pascal_case.symbols = all_members
+dotnet_naming_rule.members_should_be_pascal_case.style = pascal_case_style
+dotnet_naming_rule.members_should_be_pascal_case.severity = warning

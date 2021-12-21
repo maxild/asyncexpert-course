@@ -1,0 +1,67 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            // Use IntelliSense to find out which attributes exist for C# debugging
+            // Use hover for the description of the existing attributes
+            // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+            "name": ".NET Core Launch (console)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            // If you have changed target frameworks, make sure to update the program path.
+            "program": "${workspaceFolder}/ThreadPoolExercises.Tests/bin/Debug/net6.0/ThreadPoolExercises.Tests.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/ThreadPoolExercises.Tests",
+            // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+            "console": "internalConsole",
+            // Visual Studio Code has debugger settings
+            "stopAtEntry": false,
+            "justMyCode": false,
+            "enableStepFiltering": false,
+            "logging": {
+                // You can optionally enable or disable messages that should be logged to the output window.
+                "exceptions": true,
+                "moduleLoad": true,
+                "threadExit": true,
+                "engineLogging": false // show/hide Debug Adapter Protocol (vsdbg engine infrastructure)  messages
+            },
+            "symbolOptions": {
+                // on Windows the debugger will default to %TEMP%\SymbolCache
+                // on Linux and macOS the debugger will default to ~/.dotnet/symbolcache.
+                // "cachePath": "C:\\symbols\\dbg",
+                // "cachePath": "/symcache",
+                // Array of symbol server URLs (
+                "searchPaths": [], // only support local symbols, _NT_SYMBOL_PATH (and Symbol Server) is not supported in vscode
+                "searchMicrosoftSymbolServer": true,
+                "searchNuGetOrgSymbolServer": true,
+                "moduleFilter": {
+                    "mode": "loadAllButExcluded",
+                    "excludedModules": [
+                        "DoNotLookForThisOne*.dll"
+                    ]
+                }
+            },
+            // Enable Source Link for GitHub URLs, and disable Source Link for all other URLs.
+            "sourceLinkOptions": {
+                "https://raw.githubusercontent.com/*": {
+                    "enabled": true
+                },
+                "*": {
+                    "enabled": false
+                }
+            },
+            // The debugger will ask the Just-In-Time compiler to generate code with optimizations disabled.
+            "suppressJITOptimizations": true,
+            "env": {
+                "COMPlus_ZapDisable": "1",
+                "COMPlus_ReadyToRun": "0"
+            }
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach"
+        }
+    ]
+}

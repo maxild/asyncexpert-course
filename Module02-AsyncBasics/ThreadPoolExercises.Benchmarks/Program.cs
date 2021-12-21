@@ -1,13 +1,6 @@
-﻿using System;
-using BenchmarkDotNet.Running;
+﻿using BenchmarkDotNet.Running;
+using ThreadPoolExercises.Benchmarks;
 
-namespace ThreadPoolExercises.Benchmarks
-{
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            BenchmarkRunner.Run<ThreadingHelpersBenchmarks>();
-        }
-    }
-}
+// Run with
+// $ sudo dotnet run -c Release --project ./ThreadPoolExercises.Benchmarks/ThreadPoolExercises.Benchmarks.csproj -- --filter '**'
+_ = BenchmarkRunner.Run<ThreadingHelpersBenchmarks>();
