@@ -1,11 +1,6 @@
-using System;
 using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using AsyncAwaitExercises.Core;
 using RichardSzalay.MockHttp;
-using Xunit;
 
 namespace AsyncAwaitExercises.Tests;
 
@@ -18,9 +13,17 @@ namespace AsyncAwaitExercises.Tests;
  * To write proper unit tests, GetStringWithRetries (or an object/service with such a method)
  * should take a dependency to "delay provider" that could be mocked and verified for calls
  * during tests. Production code would use Task.Delay-based version.
+ *
+ * MockHttp is a testing layer for Microsoft's HttpClient library. It allows stubbed
+ * responses to be configured for matched HTTP requests and can be used to test your
+ * application's service layer.
  */
-public class GetStringWithRetriesTests
+public class GetStringWithRetriesTests : XunitContextBase
 {
+    public GetStringWithRetriesTests(ITestOutputHelper output) : base(output)
+    {
+    }
+
     [Theory]
     [InlineData(-1)]
     [InlineData(0)]
@@ -45,13 +48,13 @@ public class GetStringWithRetriesTests
         var mockHttp = new MockHttpMessageHandler();
         var client = mockHttp.ToHttpClient();
 
-        CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationTokenSource cts = new();
         cts.Cancel();
 
         var exception = await Record.ExceptionAsync(async () =>
-         await AsyncHelpers.GetStringWithRetries(client,
-            "https://local/test",
-            token: cts.Token));
+            await AsyncHelpers.GetStringWithRetries(client,
+                "https://local/test",
+                token: cts.Token));
 
         Assert.NotNull(exception);
         Assert.IsType<TaskCanceledException>(exception);
@@ -156,7 +159,7 @@ public class GetStringWithRetriesTests
             .Respond(HttpStatusCode.InternalServerError);
         var client = mockHttp.ToHttpClient();
 
-        CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationTokenSource cts = new();
         cts.CancelAfter(500);
 
         var exception = await Record.ExceptionAsync(async () =>
@@ -181,7 +184,7 @@ public class GetStringWithRetriesTests
             .Respond(HttpStatusCode.InternalServerError);
         var client = mockHttp.ToHttpClient();
 
-        CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationTokenSource cts = new();
         cts.CancelAfter(1500);
 
         var exception = await Record.ExceptionAsync(async () =>

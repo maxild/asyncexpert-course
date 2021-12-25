@@ -4,7 +4,7 @@ namespace AsyncAwaitExercises;
 
 class Program
 {
-    static async Task Main(string[] args)
+    static async Task Main()
     {
         // Here you can play around with those method, prototype and easily debug
         using var client = new HttpClient();
@@ -23,5 +23,5 @@ class Program
     }
 
     static void DumpThread(string label) =>
-        Console.WriteLine($"[{DateTime.Now:hh:mm:ss.fff}] {label}: TID:{Thread.CurrentThread.ManagedThreadId}");
+        Console.WriteLine($"[{DateTime.Now:hh:mm:ss.fff}] {label}: TID:{Environment.CurrentManagedThreadId}");
 }
