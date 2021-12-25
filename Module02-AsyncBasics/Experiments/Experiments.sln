@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThreadPoolConsoleApp", "Thr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThreadPoolProcessingGuardConsoleApp", "ThreadPoolProcessingGuardConsoleApp\ThreadPoolProcessingGuardConsoleApp.csproj", "{79BDE3A4-3158-47B6-B48B-6FA42A0635EF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncAwaitConsoleApp", "AsyncAwaitConsoleApp\AsyncAwaitConsoleApp.csproj", "{276D58F4-C33F-4213-A5AE-1C2A279A6144}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{79BDE3A4-3158-47B6-B48B-6FA42A0635EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79BDE3A4-3158-47B6-B48B-6FA42A0635EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79BDE3A4-3158-47B6-B48B-6FA42A0635EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{276D58F4-C33F-4213-A5AE-1C2A279A6144}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{276D58F4-C33F-4213-A5AE-1C2A279A6144}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{276D58F4-C33F-4213-A5AE-1C2A279A6144}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{276D58F4-C33F-4213-A5AE-1C2A279A6144}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
