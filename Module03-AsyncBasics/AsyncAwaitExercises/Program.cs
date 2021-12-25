@@ -1,32 +1,27 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using AsyncAwaitExercises.Core;
+﻿using AsyncAwaitExercises.Core;
 
-namespace AsyncAwaitExercises
+namespace AsyncAwaitExercises;
+
+class Program
 {
-    class Program
+    static async Task Main(string[] args)
     {
-        static async Task Main(string[] args)
+        // Here you can play around with those method, prototype and easily debug
+        using var client = new HttpClient();
+
+        try
         {
-            // Here you can play around with those method, prototype and easily debug
-            using var client = new HttpClient();
+            DumpThread("Before call");
+            var result = await AsyncHelpers.GetStringWithRetries(client, "https://postman-echo.com/status/500");
+            DumpThread("After call");
 
-            try
-            {
-                DumpThread("Before call");
-                var result = await AsyncHelpers.GetStringWithRetries(client, "https://postman-echo.com/status/500");
-                DumpThread("After call");
-
-            }
-            catch (Exception ex)
-            {
-                DumpThread($"After exception {ex}");
-            }
         }
-
-        static void DumpThread(string label) =>
-            Console.WriteLine($"[{DateTime.Now:hh:mm:ss.fff}] {label}: TID:{Thread.CurrentThread.ManagedThreadId}");
+        catch (Exception ex)
+        {
+            DumpThread($"After exception {ex}");
+        }
     }
+
+    static void DumpThread(string label) =>
+        Console.WriteLine($"[{DateTime.Now:hh:mm:ss.fff}] {label}: TID:{Thread.CurrentThread.ManagedThreadId}");
 }
